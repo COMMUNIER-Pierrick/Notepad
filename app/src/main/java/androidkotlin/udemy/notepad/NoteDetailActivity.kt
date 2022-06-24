@@ -1,17 +1,28 @@
 package androidkotlin.udemy.notepad
 
+import android.app.Activity
+import android.app.PendingIntent.getActivity
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
+import androidkotlin.udemy.notepad.utils.persistNote
 import androidx.appcompat.widget.Toolbar
+import com.google.android.material.internal.ContextUtils.getActivity
 
 class NoteDetailActivity : AppCompatActivity() {
 
     companion object {
+        val REQUEST_EDIT_NOTE = 1
         val EXTRA_NOTE = "note"
         val EXTRA_NOTE_INDEX = "noteIndex"
+
+        val ACTION_SAVE_NOTE = "android's.udemy.notepad.actions.ACTION_SAVE_NOTE"
+        val ACTION_DELETE_NOTE = "android's.udemy.notepad.actions.ACTION_DELETE_NOTE"
     }
 
     lateinit var note: Note
@@ -44,11 +55,48 @@ class NoteDetailActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.action_save -> {
+                saveNote()
                 return true
             }
-            else -> return super.onOptionsItemSelected(item)
+            R.id.action_delete -> {
+                showConfirmDeleteNoteDialog()
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun showConfirmDeleteNoteDialog() {
+        val confirmFragment = ConfirmDeleteNoteDialogFragment(note.title!!)
+        confirmFragment.listener = object : ConfirmDeleteNoteDialogFragment.ConfirmDeleteDialogListener {
+            override fun onDialogPositiveClick() {
+                deleteNote()
+            }
+
+            override fun onDialogNegativeClick() {}
+
+        }
+        confirmFragment.show(supportFragmentManager, "confirmDeleteDialog")
+    }
+
+    fun saveNote() {
+        note.title = titleView.text.toString()
+        note.text = textView.text.toString()
+
+        intent = Intent(ACTION_SAVE_NOTE)
+        intent.putExtra(EXTRA_NOTE, note as Parcelable)
+        intent.putExtra(EXTRA_NOTE_INDEX, noteIndex)
+        setResult(Activity.RESULT_OK, intent)
+        persistNote(this, note)
+        finish()
+    }
+
+    fun deleteNote() {
+        intent = Intent(ACTION_DELETE_NOTE)
+        intent.putExtra(EXTRA_NOTE_INDEX, noteIndex)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 }

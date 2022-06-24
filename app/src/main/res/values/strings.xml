@@ -3,4 +3,5 @@
     <string name="titre_de_la_note">Titre de la note</string>
     <string name="text_de_la_note">Text de la note</string>
     <string name="enregister">Enregister</string>
+    <string name="supprimer">Supprimer</string>
 </resources>
