@@ -4,6 +4,7 @@
 
 Application mobile permettant de pouvoir prendre et enregistrer des notes 
 
-## Infos
+## Architecture
 
-⚠Toujours en cours de développement⚠
+Le projet utilse **Kotlin** comme langage de programmation.
+Le stockage des notes se fait via un fichier
